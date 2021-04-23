@@ -10,7 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator; 
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Auth;
+
 
 class AuthController extends Controller
 {
@@ -46,8 +46,8 @@ class AuthController extends Controller
         } catch (JWTException $e) {
             return response()->json(['failed_to_create_token'], Response::HTTP_BAD_REQUEST);
         }
-        
-        return response()->json(compact('token'), Response::HTTP_OK);        
+        $user = auth()->user();
+        return response()->json(['userLogin' => $user, 'token' => $token], Response::HTTP_OK);        
     }
 
     /**
@@ -65,7 +65,7 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function logout() {
-        auth()->logout();
+        JWTAuth::invalidate(JWTAuth::getToken());
         return response()->json(['message' => 'User successfully signed out'], Response::HTTP_OK);
     }
 
